@@ -1,5 +1,5 @@
-import fs from 'fs'
+import fs from 'fs/promises'
 
-fs.readFile('index.html', 'utf-8', (err, content) => {
-    console.log(content)
-})
+const content = await fs.readFile('index.html', 'utf-8')
+
+console.log(content)
