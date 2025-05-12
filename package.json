@@ -1,0 +1,14 @@
+{
+  "name": "nodejs-12-mai-2025",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "serve"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}
