@@ -12,3 +12,5 @@ console.log(stat.isDirectory())
 const ext = path.extname('serve.js')
 
 console.log(ext)
+
+//  fs.mkdir('test/foo', { recursive: true })

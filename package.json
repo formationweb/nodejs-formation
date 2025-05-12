@@ -10,5 +10,8 @@
   "type": "module",
   "devDependencies": {
     "serve": "^14.2.4"
+  },
+  "dependencies": {
+    "markdown-it": "^14.1.0"
   }
 }
