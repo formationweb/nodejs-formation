@@ -1,5 +1,9 @@
 import usersData from "../../data/users";
+import postsData from "../../data/posts";
 import { NotFoundError } from "../../errors";
+
+type Request = Express.Request
+type RequestWithUser = Request & { user: any }
 
 export function getUsers(req, res) {
   const search = req.query.search;
@@ -12,14 +16,12 @@ export function getUsers(req, res) {
   res.json(usersData);
 }
 
-export function getUserById(req, res, next) {
-  const userId = +req.params.userId;
-  const user = usersData.find((user) => user.id == userId);
-  if (!user) {
-    next(new NotFoundError("User not Found"));
-    return;
+export function getUserById(req: RequestWithUser, res, next) {
+  if (!req.user) {
+    next(new Error('middleware manquant'))
+    return
   }
-  res.json(usersData);
+  res.json(req.user);
 }
 
 export function createUser(req, res) {
@@ -38,4 +40,10 @@ export function updateUser(req, res) {
   res.json({
     id: userId,
   });
+}
+
+export function getUsersPost(req, res, next) {
+  const userId = req.params.userId;
+  const posts = postsData.filter(post => post.userId == userId)
+  res.json(posts)
 }

@@ -1,12 +1,14 @@
 import express from 'express'
 import { usersRouter } from './api/users/users.router'
 import { NotFoundError } from './errors'
+import { postsRouter } from './api/posts/posts.router'
 
 export const app = express()
 
 app.use(express.json())
 
 app.use('/api/users', usersRouter)
+app.use('/api/posts', postsRouter)
 
 app.use((req, res, next) => {
     next(new NotFoundError('Url pas existant'))
