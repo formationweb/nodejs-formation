@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { createUser, getUserById, getUsers, getUsersPost, updateUser } from "./users.controller";
+import { createUser, followUser, getUserById, getUsers, getUsersPost, updateUser } from "./users.controller";
 import { userExistsMiddleware } from "../../middlewares/user-exists";
 import { validateBodyMiddleware } from "../../middlewares/validate-body";
-import { userSchemaDto } from "./users.schema";
+import { followSchemaDto, userSchemaDto } from "./users.schema";
 import { isIdNumberMiddleware } from "../../middlewares/is-number";
 
 export const usersRouter = Router()
@@ -27,3 +27,4 @@ usersRouter.put('/:userId',
     updateUser
 )
 
+usersRouter.post('/follow', validateBodyMiddleware(followSchemaDto), followUser)

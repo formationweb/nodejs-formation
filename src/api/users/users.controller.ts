@@ -1,7 +1,11 @@
 import usersData from "../../data/users";
 import postsData from "../../data/posts";
+import { Follow } from "./users.schema";
 import { BadRequestError, NotFoundError } from "../../errors";
-import { userSchemaDto } from "./users.schema";
+
+type Follows = Follow[]
+
+const follows: Follows = []
 
 type Request = Express.Request
 type RequestWithUser = Request & { user: any }
@@ -47,4 +51,32 @@ export function getUsersPost(req, res, next) {
   const userId = req.params.userId;
   const posts = postsData.filter(post => post.userId == userId)
   res.json(posts)
+}
+
+export function followUser(req, res, next) {
+  try {
+    const body = req.body
+    const { followerId, followeeId } = body
+
+    if (!usersData.find(user => user.id == followerId )) {
+      throw new NotFoundError('followerId not exists')
+    }
+
+    if (!usersData.find(user => user.id == followeeId )) {
+      throw new NotFoundError('followeeId not exists')
+    }
+
+    const pairFound = follows.find(follow => follow.followerId == followerId && follow.followeeId == followeeId)
+
+    if (pairFound) {
+      throw new BadRequestError('déjà entrée')
+    }
+
+    follows.push(body)
+
+    res.status(201).json(body)
+  }
+  catch (err) {
+    next(err)
+  }
 }

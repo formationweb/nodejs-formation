@@ -14,7 +14,7 @@ followeeId : ID de l'utilisateur suivi (doit être un entier positif).
 
 2. Créer le point de terminaison pour suivre un utilisateur
 
-Implémentez un point de terminaison POST /follow qui permet à un utilisateur de suivre un autre utilisateur
+Implémentez un point de terminaison POST /api/users/follow qui permet à un utilisateur de suivre un autre utilisateur
 
 Puisqu’on nous n’avons pas de base de données, avoir juste un 
 
