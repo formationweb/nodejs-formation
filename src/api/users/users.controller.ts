@@ -1,6 +1,7 @@
 import usersData from "../../data/users";
 import postsData from "../../data/posts";
-import { NotFoundError } from "../../errors";
+import { BadRequestError, NotFoundError } from "../../errors";
+import { userSchemaDto } from "./users.schema";
 
 type Request = Express.Request
 type RequestWithUser = Request & { user: any }
@@ -24,12 +25,12 @@ export function getUserById(req: RequestWithUser, res, next) {
   res.json(req.user);
 }
 
-export function createUser(req, res) {
+export function createUser(req, res, next) {
+  //const { success, data, error } = userSchemaDto.safeParse(req.body)
   const body = req.body;
-  console.log(body);
   res.json({
     id: 1,
-    name: "asad",
+    ...body
   });
 }
 

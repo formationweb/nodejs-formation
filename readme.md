@@ -1,14 +1,28 @@
-A partir des données suivantes:  https://jsonplaceholder.typicode.com/posts
+Ajouter une fonctionnalité de suivi d'utilisateurs à l'API
 
-* Créez un routeur qui :
-  * Affichera tous les messages. Url: /api/posts
-    * Avoir la possibilité de rechercher le titre d’un post: /api/posts?search=mot. ça renvoie un tableau avec les résultats
-    * Aide: https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/String/includes
-    * https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
-  * Affichera seulement un message. Url: /api/posts/:postId
-    * Si le message n’existe pas, envoyez une erreur 404
-  * Les messages d’un utilisateur en précisant l’identifiant. On aimerait avoir l’URL suivante: /api/users/:userId/posts
-    * Si l’utilisateur n’existe pas, envoyez une erreur 404
-* Partie avancée:
-  * Au lieu d’utiliser un tableau d’objet. Transformer votre tableau de façon à avoir un tableau d’instance de la classe Post.
-  * Aide: https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Array/map
+Objectif
+
+Créer un point de terminaison qui permet à un utilisateur de suivre un autre utilisateur. Utilisez Zod pour valider les entrées afin d'assurer la sécurité des données.
+
+1. Créer le schéma de validation pour le suivi (followSchema)
+
+Définissez un schéma followSchema avec Zod pour valider les données de suivi. Les données de suivi doivent inclure :
+
+followerId : ID de l'utilisateur qui suit (doit être un entier positif).
+
+followeeId : ID de l'utilisateur suivi (doit être un entier positif).
+
+2. Créer le point de terminaison pour suivre un utilisateur
+
+Implémentez un point de terminaison POST /follow qui permet à un utilisateur de suivre un autre utilisateur
+
+Puisqu’on nous n’avons pas de base de données, avoir juste un 
+
+const follows = [];
+
+en haut du fichier
+
+* Validez les données de la requête avec followSchema.
+* Vérifiez que les IDs des utilisateurs existent avant d'ajouter un suivi.
+* En cas de succès, renvoyez les données de suivi avec un statut HTTP 201.
+* En cas d'erreur de validation ou si les utilisateurs n'existent pas, renvoyez un message d'erreur approprié avec un statut HTTP 400 ou 404.

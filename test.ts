@@ -15,3 +15,10 @@ interface Movement {
 interface Movement2 {
     translate(pointA: Vector, pointB: Vector) 
 }
+
+function foo<T>(): T {
+    return 'dfezfe' as T
+}
+
+const val = foo<string>()
+val.toLowerCase()
