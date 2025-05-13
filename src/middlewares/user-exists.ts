@@ -1,13 +1,18 @@
+import { User } from "../api/users/users.model";
 import usersData from "../data/users";
 import { NotFoundError } from "../errors";
 
-export function userExistsMiddleware(req, res, next) {
-  const userId = +req.params.userId;
-  const user = usersData.find((user) => user.id == userId);
-  if (!user) {
-    next(new NotFoundError("User not Found"));
-    return;
+export async function userExistsMiddleware(req, res, next) {
+  try {
+    const userId = +req.params.userId;
+    const user = await User.findByPk(userId)
+    if (!user) {
+      throw new NotFoundError("User not Found")
+    }
+    req.user = user
+    next()
   }
-  req.user = user
-  next()
+  catch (err) {
+    next(err)
+  }
 }

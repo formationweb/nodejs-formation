@@ -7,6 +7,7 @@ export function validateBodyMiddleware(schemaDto) {
             next()
         }
         catch (err) {
+            console.log(err)
             next(new BadRequestError(err.message))
         }
     }
