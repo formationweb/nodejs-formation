@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx --watch server"
+    "dev": "tsx --watch src/index"
   },
   "repository": {
     "type": "git",
