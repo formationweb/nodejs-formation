@@ -1,23 +1,51 @@
-import postsData from "../../data/posts";
+import { Op } from "sequelize";
 import { NotFoundError } from "../../errors";
+import { Post } from "./posts.model";
 
-export function getPosts(req, res) {
-  const search = req.params.search;
+export async function getPosts(req, res, next) {
+ try {
+  const search = req.query.search;
+  let filter = {}
   if (search) {
-    res.json(
-      postsData.filter((post) => post.title.includes(search as string))
-    );
-    return;
+    filter = {
+      where: {
+        title: {
+          [Op.like]: `%${search}%`
+        }
+      }
+    }
   }
-  res.json(postsData);
+  const posts = await Post.findAll(filter)
+  res.json(posts);
+ }
+ catch (err) {
+  next(err)
+ }
 }
 
-export function getPostById(req, res, next) {
-  const postId = +req.params.postId;
-  const post = postsData.find((post) => post.id == postId);
-  if (!post) {
-    next(new NotFoundError("Post not Found"));
-    return;
+export async function getPostById(req, res, next) {
+  try {
+    const postId = +req.params.postId;
+    const post = await Post.findByPk(postId)
+    if (!post) {
+      throw new NotFoundError('Post Not Found')
+    }
+    res.json(post);
   }
-  res.json(post);
+  catch (err) {
+    next(err)
+  }
+}
+
+export async function createPost(req, res, next) {
+  try {
+    const body = req.body;
+    const postCreated = await Post.create({
+      ...body,
+      userId: 1
+    });
+    res.json(postCreated);
+  } catch (err) {
+    next(err);
+  }
 }
