@@ -1,22 +1,43 @@
-API follow
+But principal :
 
-Objectif
+Construire des middlewares pour gérer :
 
-Créer une fonction followUser qui permettra à un utilisateur authentifié de suivre un autre utilisateur.
+1. Vérification de rôle (admin, author, reader)
+2. Vérification d’appartenance (un utilisateur peut modifier uniquement ses propres posts)
+3. Validation de données (schéma avec  Zod)
+4. Contrôle de publication (ex : un reader ne voit que les posts published)
 
-Désormais, nous avons avoir un modèle FollowModel contenant :
+---
 
-* followerId
-* followeeId
-* dateCreated
+Structure des données :
 
-Exigences
+User
 
-1. La fonction doit être accessible uniquement aux utilisateurs authentifiés.
-2. L'identifiant du suiveur (followerId) doit être automatiquement récupéré à partir de l'utilisateur authentifié.
-3. L'identifiant de l'utilisateur à suivre (followeeId) doit être fourni dans le corps de la requête.
-4. La fonction doit vérifier si l'utilisateur à suivre existe.
-5. La fonction doit vérifier si la relation de suivi n'existe pas déjà.
-6. La nouvelle relation de suivi doit être enregistrée dans une base de données.
-7. La fonction doit gérer les erreurs appropriées (utilisateur non trouvé, déjà suivi, etc.).
-8. La réponse doit renvoyer un statut 204 en cas de succès.
+id, name, email, role // 'admin' | 'author' | 'reader'
+
+
+Post
+
+id, title, content, status, userId
+// status: 'draft' | 'pending' | 'published'
+
+
+---
+
+Routes à implémenter :
+
+Public
+
+* GET /posts : liste des posts visibles publiquement (filtrés via middleware)
+
+Authenticated
+
+* GET /me/posts : l’auteur voit tous ses posts, même en brouillon
+* POST /posts : créer un post (author)
+* PUT /posts/:id : modifier un post (author)
+* DELETE /posts/:id : supprimer un post (admin ou owner)
+
+Admin uniquement
+
+* GET /admin/posts/pending : voir tous les posts pending
+* PUT /admin/posts/:id/publish : publier un post

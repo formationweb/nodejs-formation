@@ -9,9 +9,8 @@ export const userSchemaDto = z.object({
 export const userUpdateSchemaDto = userSchemaDto.strict().partial()
 
 export const followSchemaDto = z.object({
-    followerId: z.number().int().positive(),
     followeeId: z.number().int().positive()
-})
+}).strict()
 
 export const loginDto = z.object({
     email: z.string(),

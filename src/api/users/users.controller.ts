@@ -1,16 +1,10 @@
-import usersData from "../../data/users";
-import postsData from "../../data/posts";
-import { Follow } from "./users.schema";
 import { BadRequestError, NotAuthorizedError, NotFoundError } from "../../errors";
 import { User } from "./users.model";
 import { Post } from "../posts/posts.model";
 import { db } from "../../db";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-
-type Follows = Follow[];
-
-const follows: Follows = [];
+import { Follow } from "./follow.model";
 
 type Request = Express.Request;
 type RequestWithUser = Request & { user: any };
@@ -85,37 +79,58 @@ export async function updateUser(req, res, next) {
   }
 }
 
-export function getUsersPost(req, res, next) {
-  const userId = req.params.userId;
-  const posts = postsData.filter((post) => post.userId == userId);
-  res.json(posts);
+export async function getUsersPost(req, res, next) {
+  try {
+    const userId = req.params.userId;
+    const posts = await Post.findAll({
+      where: {
+        userId
+      },
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: {
+            exclude: ['password']
+          }
+        }
+      ]
+    })
+    res.json(posts);
+  }
+  catch (err) {
+    next(err)
+  }
 }
 
-export function followUser(req, res, next) {
+export async function followUser(req, res, next) {
   try {
     const body = req.body;
-    const { followerId, followeeId } = body;
+    const follower = req.user
+    const { followeeId } = body;
 
-    if (!usersData.find((user) => user.id == followerId)) {
-      throw new NotFoundError("followerId not exists");
+    const followee = await User.findByPk(followeeId)
+
+    if (!followee) {
+      throw new NotFoundError('Followee not exists')
     }
 
-    if (!usersData.find((user) => user.id == followeeId)) {
-      throw new NotFoundError("followeeId not exists");
+    const data = {
+      followeeId,
+      followerId: follower.id
     }
 
-    const pairFound = follows.find(
-      (follow) =>
-        follow.followerId == followerId && follow.followeeId == followeeId
-    );
+    const existingFollow = await Follow.findOne({
+      where: data
+    })
 
-    if (pairFound) {
-      throw new BadRequestError("déjà entrée");
+    if (existingFollow) {
+      throw new BadRequestError()
     }
 
-    follows.push(body);
+    await Follow.create(data)
 
-    res.status(201).json(body);
+    res.status(204).send()
   } catch (err) {
     next(err);
   }
