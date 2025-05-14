@@ -13,7 +13,11 @@ export async function authMiddleware(req, res, next) {
             throw 'Token not found'
         }
         const decoded = jwt.verify(token, process.env.JWT_SECRET_TOKEN as string) as JwtPayload
-        req.user = await User.findByPk(decoded.userId)
+        req.user = await User.findByPk(decoded.userId, {
+            attributes: {
+                exclude: ['password']
+            }
+        })
         next()
     }
     catch (message) {

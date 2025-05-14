@@ -6,6 +6,8 @@ export const userSchemaDto = z.object({
     password: z.string()
 })
 
+export const userUpdateSchemaDto = userSchemaDto.strict().partial()
+
 export const followSchemaDto = z.object({
     followerId: z.number().int().positive(),
     followeeId: z.number().int().positive()
