@@ -1,4 +1,5 @@
 import { NotFoundError } from "../../errors"
+import { Post } from "../posts/posts.model"
 import { User } from "../users/users.model"
 
 export function getMe(req, res, next) {
@@ -28,4 +29,19 @@ export async function updateMe(req, res, next) {
    catch (err) {
     next(err)
    }
+}
+
+
+export async function getPosts(req, res, next) {
+ try {
+  const posts = await Post.findAll({
+    where: {
+        userId: req.user.id
+    }
+  })
+  res.json(posts);
+ }
+ catch (err) {
+  next(err)
+ }
 }

@@ -1,20 +1,18 @@
 import { Op } from "sequelize";
 import { NotFoundError } from "../../errors";
-import { Post } from "./posts.model";
+import { Post, PostStatus } from "./posts.model";
 import { User } from "../users/users.model";
 
 export async function getPosts(req, res, next) {
  try {
   const search = req.query.search;
-  let filter = {}
-  if (search) {
-    filter = {
-      where: {
-        title: {
-          [Op.like]: `%${search}%`
-        }
-      }
+  let filter: any = {
+    where: {
+      status: PostStatus.Published
     }
+  }
+  if (search) {
+    filter.where.title = { [Op.like]: `%${search}%` }
   }
   const posts = await Post.findAll(filter)
   res.json(posts);
