@@ -1,8 +1,12 @@
 import usersData from "../../data/users";
 import postsData from "../../data/posts";
 import { Follow } from "./users.schema";
-import { BadRequestError, NotFoundError } from "../../errors";
+import { BadRequestError, NotAuthorizedError, NotFoundError } from "../../errors";
 import { User } from "./users.model";
+import { Post } from "../posts/posts.model";
+import { db } from "../../db";
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 type Follows = Follow[];
 
@@ -10,6 +14,17 @@ const follows: Follows = [];
 
 type Request = Express.Request;
 type RequestWithUser = Request & { user: any };
+
+const commonAttrs = {
+  attributes: {
+    exclude: ['password']
+  }
+}
+
+if (!process.env.JWT_SECRET_TOKEN) {
+  console.error('JWT_SECRET_TOKEN env missing')
+  process.exit(1)
+}
 
 export async function getUsers(req, res, next) {
   try {
@@ -20,7 +35,7 @@ export async function getUsers(req, res, next) {
     //   );
     //   return;
     // }
-    const users = await User.findAll();
+    const users = await User.findAll(commonAttrs);
     res.json(users);
   } catch (err) {
     next(err);
@@ -62,7 +77,7 @@ export async function updateUser(req, res, next) {
       throw new NotFoundError('Not Found User')
     }
     res.json(
-      await User.findByPk(userIdModified)
+      await User.findByPk(userIdModified, commonAttrs)
     );
   }
   catch (err) {
@@ -103,5 +118,67 @@ export function followUser(req, res, next) {
     res.status(201).json(body);
   } catch (err) {
     next(err);
+  }
+}
+
+export async function deleteUser(req, res, next) {
+  const transaction = await db.transaction()
+  try {
+    const userId = req.params.userId
+    await Post.destroy({
+      where: {
+        userId
+      },
+      transaction
+    })
+    const rowsDeleted = await User.destroy({
+      where: {
+        id: userId
+      },
+      transaction
+    })
+
+    if (!rowsDeleted) {
+      throw new NotFoundError('Not User Found')
+    }
+
+    await transaction.commit()
+
+    res.status(204).send()
+  }
+  catch (err) {
+    await transaction.rollback()
+    next(err)
+  }
+}
+
+export async function login(req, res, next) {
+  try {
+    const { email, password } = req.body
+    const user = await User.findOne({ 
+        where: {
+          email
+        }
+    })
+    if (!user) {
+      throw new NotAuthorizedError()
+    }
+    const isRightPassword = await bcrypt.compare(password, user.password)
+    if (!isRightPassword) {
+      throw new NotAuthorizedError()
+    }
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_TOKEN as string, {
+      expiresIn: '15m'
+    })
+    res.cookie('token', token, {
+      httpOnly: true
+    })
+    res.json({
+      token,
+      userId: user.id
+    })
+  }
+  catch (err) {
+    next(err)
   }
 }

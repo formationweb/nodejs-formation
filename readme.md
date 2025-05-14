@@ -1,2 +1,3 @@
-* Créer un modèle Sequelize Post avec les attributs appropriés (par exemple, title, content, userId).
-* Pour chaque endpoint de l’exercice précédent (/api/posts), ne plus utiliser des données fictives mais utiliser le CRUD Sequelize
+* Créer les endpoints
+  *  /me en GET qui récupère les données de l’utilisateur connecté (ne pas envoyer le mot de passe)
+  * /me en PUT pour mettre à jour l’utilisateur connecté.

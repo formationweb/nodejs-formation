@@ -5,7 +5,11 @@ import { NotFoundError } from "../errors";
 export async function userExistsMiddleware(req, res, next) {
   try {
     const userId = +req.params.userId;
-    const user = await User.findByPk(userId)
+    const user = await User.findByPk(userId, {
+      attributes: {
+        exclude: ['password']
+      }
+    })
     if (!user) {
       throw new NotFoundError("User not Found")
     }

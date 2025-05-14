@@ -1,6 +1,7 @@
 import { Op } from "sequelize";
 import { NotFoundError } from "../../errors";
 import { Post } from "./posts.model";
+import { User } from "../users/users.model";
 
 export async function getPosts(req, res, next) {
  try {
@@ -26,7 +27,20 @@ export async function getPosts(req, res, next) {
 export async function getPostById(req, res, next) {
   try {
     const postId = +req.params.postId;
-    const post = await Post.findByPk(postId)
+    const post = await Post.findByPk(postId, {
+      attributes: {
+        exclude: ['createdAt', 'userId']
+      },
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: {
+            exclude: ['email']
+          }
+        }
+      ]
+    })
     if (!post) {
       throw new NotFoundError('Post Not Found')
     }
@@ -42,7 +56,7 @@ export async function createPost(req, res, next) {
     const body = req.body;
     const postCreated = await Post.create({
       ...body,
-      userId: 1
+      userId: req.user.id
     });
     res.json(postCreated);
   } catch (err) {

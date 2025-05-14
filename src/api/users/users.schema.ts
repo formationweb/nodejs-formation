@@ -2,13 +2,19 @@ import { z } from "zod";
 
 export const userSchemaDto = z.object({
     name: z.string().max(20).transform(username => username.trim().toLowerCase()),
-    email: z.string().email()
+    email: z.string().email(),
+    password: z.string()
 })
 
 export const followSchemaDto = z.object({
     followerId: z.number().int().positive(),
     followeeId: z.number().int().positive()
 })
+
+export const loginDto = z.object({
+    email: z.string(),
+    password: z.string()
+}).strict()
 
 export type UserDto = z.infer<typeof userSchemaDto>
 export type Follow = z.infer<typeof followSchemaDto>
